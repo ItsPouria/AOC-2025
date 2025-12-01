@@ -1,25 +1,26 @@
 use std::fs;
 
 fn main() {
+    let input = fs::read_to_string("input/input.txt").expect("Failed to read input file");
+    let rotations: Vec<&str> = input.lines().filter(|line| !line.is_empty()).collect();
+
     let mut position: i32 = 50;
-    let max_value = 100;
-    let mut zero_position = 0;
-    let instructions =
-        fs::read_to_string("input/input.txt").expect("Should have been able to read the file.");
-    for line in instructions.lines() {
-        let direction = &line[0..1];
-        let number: i32 = line[1..].parse().expect("Expected digits.");
+    let dial_size: i32 = 100;
+    let mut count_zero: i64 = 0;
 
-        if direction == "L" {
-            position = (position - number).rem_euclid(max_value);
-        } else {
-            position = (position + number).rem_euclid(max_value);
-        }
+    for rotation in rotations {
+        let direction = &rotation[0..1];
+        let steps: i32 = rotation[1..].parse().unwrap();
 
-        if position == 0 {
-            zero_position += 1;
+        let increment = if direction == "R" { 1 } else { -1 };
+
+        for _ in 0..steps {
+            position = (position + increment).rem_euclid(dial_size);
+            if position == 0 {
+                count_zero += 1;
+            }
         }
     }
 
-    println!("The zero position was met {} times", zero_position)
+    println!("Password using method 0x434C49434B: {}", count_zero);
 }
